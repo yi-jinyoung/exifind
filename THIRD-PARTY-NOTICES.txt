@@ -1,0 +1,39 @@
+Exifind — Third-Party Notices
+================================
+
+ExifTool
+--------
+Exifind includes ExifTool by Phil Harvey.
+Copyright (c) 2003-2026 Phil Harvey.
+https://exiftool.org/
+
+ExifTool is free software and may be redistributed and/or modified under the
+same terms as Perl itself. Perl is distributed under either the GNU General
+Public License or the Artistic License. The bundled ExifTool files are kept
+separate from Exifind and are executed as a separate process.
+
+The Windows ExifTool package also contains Strawberry Perl components and the
+Windows launcher by Oliver Betz. Their original readme, license, source and
+third-party license archive are included unchanged in the extracted runtime's
+licenses and exiftool_files directories.
+
+ExifTool source:
+https://github.com/exiftool/exiftool
+
+Windows package information:
+https://oliverbetz.de/pages/Artikel/ExifTool-for-Windows
+
+
+Spoqa Han Sans Neo
+------------------
+Copyright (c) 2020 Spoqa (spoqa.com), with Reserved Font Name
+"Spoqa Han Sans Neo".
+
+The font software is licensed under the SIL Open Font License, Version 1.1.
+The complete license is included as SPOQA-HAN-SANS-NEO-OFL.txt.
+
+
+Exifind
+-------
+Copyright (c) 2026 scenes.by.
+Exifind is distributed under the MIT License. See EXIFIND-MIT-LICENSE.txt.
