@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Text;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -17,8 +16,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Photo and video metadata inspector")]
 [assembly: AssemblyCompany("scenes.by")]
 [assembly: AssemblyCopyright("Copyright © 2026 scenes.by")]
-[assembly: AssemblyVersion("1.5.0.0")]
-[assembly: AssemblyFileVersion("1.5.0.0")]
+[assembly: AssemblyVersion("1.5.1.0")]
+[assembly: AssemblyFileVersion("1.5.1.0")]
 
 namespace LumixMetaApp
 {
@@ -47,8 +46,11 @@ namespace LumixMetaApp
         {
             base.OnPaint(e);
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine;
-            TextRenderer.DrawText(e.Graphics, "Exifind", titleFont, new Point(22, 8), Color.FromArgb(20, 21, 19), flags);
-            TextRenderer.DrawText(e.Graphics, "Find the Unseen Details", taglineFont, new Point(22, 40), Color.FromArgb(95, 97, 91), flags);
+            float scale = e.Graphics.DpiX / 96f;
+            var titlePoint = new Point((int)Math.Round(22 * scale), (int)Math.Round(8 * scale));
+            var taglinePoint = new Point((int)Math.Round(22 * scale), (int)Math.Round(40 * scale));
+            TextRenderer.DrawText(e.Graphics, "Exifind", titleFont, titlePoint, Color.FromArgb(20, 21, 19), flags);
+            TextRenderer.DrawText(e.Graphics, "Find the Unseen Details", taglineFont, taglinePoint, Color.FromArgb(95, 97, 91), flags);
         }
 
         protected override void Dispose(bool disposing)
@@ -76,10 +78,7 @@ namespace LumixMetaApp
         readonly Dictionary<string, Dictionary<string, object>> metadata =
             new Dictionary<string, Dictionary<string, object>>(StringComparer.OrdinalIgnoreCase);
         string currentFile;
-        readonly PrivateFontCollection privateFonts = new PrivateFontCollection();
-        readonly PrivateFontCollection thinFonts = new PrivateFontCollection();
         readonly FontFamily uiFont;
-        readonly FontFamily thinFont;
         readonly string runtimeDir;
 
         public MainForm()
@@ -91,9 +90,9 @@ namespace LumixMetaApp
             StartPosition = FormStartPosition.CenterScreen;
             BackColor = Color.FromArgb(243, 243, 239);
             runtimeDir = EnsureBundledRuntime();
-            uiFont = ResolveUiFont();
-            thinFont = ResolveThinFont();
+            uiFont = SystemFonts.MessageBoxFont.FontFamily;
             Font = new Font(uiFont, 10.5f, FontStyle.Regular, GraphicsUnit.Point);
+            AutoScaleDimensions = new SizeF(96f, 96f);
             AutoScaleMode = AutoScaleMode.Dpi;
             AllowDrop = true;
             DragEnter += OnDragEnter;
@@ -154,7 +153,7 @@ namespace LumixMetaApp
             welcome.DragDrop += OnDragDrop;
 
             dropTitle.Text = "Drop media here";
-            dropTitle.Font = new Font(thinFont, 13, FontStyle.Regular);
+            dropTitle.Font = new Font(uiFont, 13, FontStyle.Regular);
             dropTitle.TextAlign = ContentAlignment.MiddleLeft;
             dropTitle.Dock = DockStyle.Fill;
             dropTitle.Padding = new Padding(18, 0, 0, 0);
@@ -499,47 +498,6 @@ namespace LumixMetaApp
         {
             var known = values.Where(x => !String.IsNullOrWhiteSpace(x) && x != "—").ToArray();
             return known.Length > 0 ? String.Join(" ", known) : "—";
-        }
-
-        FontFamily ResolveUiFont()
-        {
-            try {
-                string bundledFonts = Path.Combine(runtimeDir, "fonts");
-                if (Directory.Exists(bundledFonts)) {
-                    foreach (var fontPath in Directory.GetFiles(bundledFonts, "*.ttf"))
-                        privateFonts.AddFontFile(fontPath);
-                    var bundledFamily = privateFonts.Families.FirstOrDefault(f =>
-                        f.Name.Equals("Spoqa Han Sans Neo", StringComparison.OrdinalIgnoreCase));
-                    if (bundledFamily != null) return bundledFamily;
-                }
-                using (var neo = new Font("Spoqa Han Sans Neo", 10))
-                    if (String.Equals(neo.Name, "Spoqa Han Sans Neo", StringComparison.OrdinalIgnoreCase))
-                        return new FontFamily("Spoqa Han Sans Neo");
-                string userFonts = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Microsoft", "Windows", "Fonts");
-                string[] candidates = {
-                    Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "SpoqaHanSansNeo-Regular.ttf"),
-                    Path.Combine(userFonts, "Spoqa Han Sans Neo Regular.ttf"),
-                    Path.Combine(userFonts, "Spoqa Han Sans Regular.ttf")
-                };
-                foreach (var candidate in candidates) {
-                    if (!File.Exists(candidate)) continue;
-                    privateFonts.AddFontFile(candidate);
-                    if (privateFonts.Families.Length > 0) return privateFonts.Families[0];
-                }
-            } catch { }
-            return new FontFamily("Segoe UI");
-        }
-
-        FontFamily ResolveThinFont()
-        {
-            try {
-                string thinPath = Path.Combine(runtimeDir, "fonts", "SpoqaHanSansNeo-Thin.ttf");
-                if (File.Exists(thinPath)) {
-                    thinFonts.AddFontFile(thinPath);
-                    if (thinFonts.Families.Length > 0) return thinFonts.Families[0];
-                }
-            } catch { }
-            return uiFont;
         }
 
         string EnsureBundledRuntime()
