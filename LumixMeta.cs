@@ -16,8 +16,8 @@ using System.Windows.Forms;
 [assembly: AssemblyDescription("Photo and video metadata inspector")]
 [assembly: AssemblyCompany("scenes.by")]
 [assembly: AssemblyCopyright("Copyright © 2026 scenes.by")]
-[assembly: AssemblyVersion("1.5.1.0")]
-[assembly: AssemblyFileVersion("1.5.1.0")]
+[assembly: AssemblyVersion("1.5.3.0")]
+[assembly: AssemblyFileVersion("1.5.3.0")]
 
 namespace LumixMetaApp
 {
@@ -46,11 +46,8 @@ namespace LumixMetaApp
         {
             base.OnPaint(e);
             var flags = TextFormatFlags.NoPadding | TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine;
-            float scale = e.Graphics.DpiX / 96f;
-            var titlePoint = new Point((int)Math.Round(22 * scale), (int)Math.Round(8 * scale));
-            var taglinePoint = new Point((int)Math.Round(22 * scale), (int)Math.Round(40 * scale));
-            TextRenderer.DrawText(e.Graphics, "Exifind", titleFont, titlePoint, Color.FromArgb(20, 21, 19), flags);
-            TextRenderer.DrawText(e.Graphics, "Find the Unseen Details", taglineFont, taglinePoint, Color.FromArgb(95, 97, 91), flags);
+            TextRenderer.DrawText(e.Graphics, "Exifind", titleFont, new Point(22, 8), Color.FromArgb(20, 21, 19), flags);
+            TextRenderer.DrawText(e.Graphics, "Find the Unseen Details", taglineFont, new Point(22, 40), Color.FromArgb(95, 97, 91), flags);
         }
 
         protected override void Dispose(bool disposing)
@@ -92,8 +89,7 @@ namespace LumixMetaApp
             runtimeDir = EnsureBundledRuntime();
             uiFont = SystemFonts.MessageBoxFont.FontFamily;
             Font = new Font(uiFont, 10.5f, FontStyle.Regular, GraphicsUnit.Point);
-            AutoScaleDimensions = new SizeF(96f, 96f);
-            AutoScaleMode = AutoScaleMode.Dpi;
+            AutoScaleMode = AutoScaleMode.None;
             AllowDrop = true;
             DragEnter += OnDragEnter;
             DragDrop += OnDragDrop;
@@ -421,14 +417,14 @@ namespace LumixMetaApp
                 Pair("Focal length", Value(m, "FocalLength")),
                 Pair("Exposure compensation", Value(m, "ExposureCompensation")),
                 Pair("White balance", Value(m, "WhiteBalance")),
-                Pair("Photo style", Value(m, "PhotoStyle", "FilmMode"))
+                Pair("Photo style", Value(m, "PhotoStyle", "FilmMode", "ImageTone"))
             });
             FillTable(lut, new [] {
                 Pair("LUT 1 name", Value(m, "LUT1Name")),
                 Pair("LUT 1 opacity", Value(m, "LUT1Opacity")),
                 Pair("LUT 2 name", Value(m, "LUT2Name")),
                 Pair("LUT 2 opacity", Value(m, "LUT2Opacity")),
-                Pair("Photo style", Value(m, "PhotoStyle", "FilmMode")),
+                Pair("Photo style", Value(m, "PhotoStyle", "FilmMode", "ImageTone")),
                 Pair("Internal OutputLUT", Value(m, "OutputLUT") == "—" ? "Not present" : "Present")
             });
             FillAllGrid();
